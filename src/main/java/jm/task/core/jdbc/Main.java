@@ -19,7 +19,6 @@ public class Main {
         //Добавление 4-х User'ов
         for (int i = 0; i < 4; i++) {
             userService.saveUser(names[i], lastNames[i], age++);
-            System.out.println("User с именем " + userService.getAllUsers().get(i).getName() + " добавлен в базу данных");
         }
 
         for (User us : userService.getAllUsers()) {

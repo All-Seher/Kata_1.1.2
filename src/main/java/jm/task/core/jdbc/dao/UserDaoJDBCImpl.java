@@ -11,57 +11,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private final Connection con;
-    private PreparedStatement preparedStatement;
 
     public UserDaoJDBCImpl() {
-        try {
-            con = Util.getConnection();
+    }
+
+    public void createUsersTable() {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlExecute.CREATE.QUERY)){
+            preparedStatement.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void createUsersTable() {
-        try (PreparedStatement preparedStatement =con.prepareStatement(sqlExecute.CREATE.QUERY)){
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void dropUsersTable() {
-        try (PreparedStatement  preparedStatement = con.prepareStatement(sqlExecute.DROP.QUERY)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlExecute.DROP.QUERY)) {
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement preparedStatement = con.prepareStatement(sqlExecute.SAVE.QUERY)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlExecute.SAVE.QUERY)) {
 
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setInt(3, age);
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void removeUserById(long id) {
-        try (PreparedStatement preparedStatement = con.prepareStatement(sqlExecute.REMOVE.QUERY) ){
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlExecute.REMOVE.QUERY) ){
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<User> getAllUsers() {
         List<User> usersList = new ArrayList<>();
-        try (PreparedStatement preparedStatement = con.prepareStatement(sqlExecute.SELECT.QUERY)){
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlExecute.SELECT.QUERY)){
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -71,7 +64,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(rs.getByte("age"));
                 usersList.add(user);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
@@ -79,9 +72,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try (PreparedStatement preparedStatement = con.prepareStatement(sqlExecute.REMOVE_ALL.QUERY)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(sqlExecute.REMOVE_ALL.QUERY)) {
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
